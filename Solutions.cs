@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace advent_of_code
 {
@@ -9,8 +10,78 @@ namespace advent_of_code
     {
         static void Main(string[] args)
         {
-            Day3.Solution();
-            Day3.SolutionPart2();
+            Day4.SolutionPart2();
+        }
+    }
+
+    class Day4
+    {
+        public static void Solution()
+        {
+            string[] input = File.ReadAllText("./data/input_day4.txt").Split(new string[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+            Regex fields = new Regex(@"([a-z]+):");
+            int valid = 0;
+            foreach (string document in input)
+            {
+                MatchCollection matches = fields.Matches(document);
+                if (matches.Count == 8 || (matches.Count == 7 && !matches.Cast<Match>().Select(m => m.Value).ToList().Contains("cid:")))
+                {
+                    valid++;
+                }
+            }
+            Console.WriteLine(valid);
+        }
+
+        public static void SolutionPart2()
+        {
+            string[] input = File.ReadAllText("./data/input_day4.txt").Split(new string[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+            Regex fields = new Regex(@"([a-z]+):");
+            int valid = 0;
+
+            List<string> eyes = new List<string>() { "amb", "blu", "brn", "gry", "grn", "hzl", "oth" };
+
+            Regex birthYear = new Regex(@"byr:(\d+)\s*");
+            Regex issueYear = new Regex(@"iyr:(\d+)\s*");
+            Regex expYear = new Regex(@"eyr:(\d+)\s*");
+            Regex height = new Regex(@"hgt:([\d\w]+)\s*");
+            Regex hair = new Regex(@"hcl:#[0-9a-f]{6}\s*");
+            Regex eye = new Regex(@"ecl:([0-9A-Za-z]+)\s*");
+            Regex pid = new Regex(@"pid:[0-9]{9}");
+
+            foreach (string document in input)
+            {
+                MatchCollection matches = fields.Matches(document);
+                if (matches.Count == 8 || (matches.Count == 7 && !matches.Cast<Match>().Select(m => m.Value).ToList().Contains("cid:")))
+                {
+                    int year = int.Parse(birthYear.Match(document).Groups[1].ToString());
+                    if (year < 1920 || year > 2002) { continue; }
+                    int iyear = int.Parse(issueYear.Match(document).Groups[1].ToString());
+                    if (iyear < 2010 || iyear > 2020) { continue; }
+                    int eyear = int.Parse(expYear.Match(document).Groups[1].ToString());
+                    if (eyear < 2020 || eyear > 2030) { continue; }
+
+                    string h = height.Match(document).Groups[1].ToString();
+                    if (h.Contains("in"))
+                    {
+                        int hV = int.Parse(h.Replace("in", ""));
+                        if (hV < 59 || hV > 76) { continue; }
+                    }
+                    else if (h.Contains("cm"))
+                    {
+                        int hV = int.Parse(h.Replace("cm", ""));
+                        if (hV < 150 || hV > 193) { continue; }
+                    }
+                    else { continue; }
+
+                    if (!hair.IsMatch(document)) { continue; }
+                    if (!eyes.Contains(eye.Match(document).Groups[1].ToString())) { continue; }
+                    if (!pid.IsMatch(document)) { continue; }
+                    Console.WriteLine("\n");
+                    Console.WriteLine(pid.Match(document));
+                    valid++;
+                }
+            }
+            Console.WriteLine(valid);
         }
     }
 
