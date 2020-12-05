@@ -10,7 +10,53 @@ namespace advent_of_code
     {
         static void Main(string[] args)
         {
-            Day4.SolutionPart2();
+            Day5.Solution();
+        }
+    }
+
+    class Day5
+    {
+        public static void Solution()
+        {
+            string[] input = File.ReadAllLines("./data/input_day5.txt").ToArray();
+            int maxValue = 0;
+            List<int> seats = new List<int>();
+            foreach (string ticket in input)
+            {
+                int minR = 1;
+                int maxR = 128;
+                int minC = 1;
+                int maxC = 8;
+                foreach (char letter in ticket)
+                {
+                    switch (letter)
+                    {
+                        case 'F':
+                            maxR -= (maxR - minR + 1) / 2;
+                            break;
+                        case 'B':
+                            minR += (maxR - minR + 1) / 2;
+                            break;
+                        case 'R':
+                            minC += (maxC - minC + 1) / 2;
+                            break;
+                        case 'L':
+                            maxC -= (maxC - minC + 1) / 2;
+                            break;
+                    }
+                }
+                int ID = (minR - 1) * 8 + (minC - 1);
+                seats.Add(ID);
+                maxValue = ID > maxValue ? ID : maxValue;
+            }
+            seats = seats.OrderBy(s => s).ToList();
+            for (int i = 0; i < seats.Count - 1; i++)
+            {
+                if (seats[i] != seats[i + 1] - 1)
+                {
+                    Console.WriteLine(seats[i] + 1);
+                }
+            }
         }
     }
 
