@@ -10,7 +10,36 @@ namespace advent_of_code
     {
         static void Main(string[] args)
         {
-            Day5.Solution();
+            Day6.SolutionPart2();
+        }
+    }
+
+    class Day6
+    {
+        public static void Solution()
+        {
+            string[] input = File.ReadAllText("./data/input_day6.txt").Split(new string[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+            int totalQ = 0;
+            foreach (string group in input)
+            {
+                char[] qs = group.ToCharArray();
+                totalQ += qs.Where(s => s != '\n').Distinct().Count();
+            }
+            Console.WriteLine(totalQ);
+        }
+
+        public static void SolutionPart2()
+        {
+            string[] input = File.ReadAllText("./data/input_day6.txt").Split(new string[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+            int totalQ = 0;
+            foreach (string group in input)
+            {
+                int lines = group.Split('\n').Length;
+                char[] qs = group.ToCharArray();
+                var counter = qs.GroupBy(s => s).Select(g => new { Metric = g.Key, Count = g.Count() });
+                totalQ += counter.Where(g => g.Count == lines).Count();
+            }
+            Console.WriteLine(totalQ);
         }
     }
 
